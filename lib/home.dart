@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,8 +9,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var isPressed = false;
-
-  // Funtion harus diletakkan di sini, function harus di luarnya Widget build
 
   @override
   Widget build(BuildContext context) {
@@ -47,58 +44,63 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [
-                  Colors.red.shade200,
-                  Colors.purple.shade200
-                ],
-                begin: const FractionalOffset(0.0, 0.0),
-                end: const FractionalOffset(1.0, 0.0),
-                stops: [0.0, 1.0],
-                tileMode: TileMode.clamp
+      // 1. Pindahkan SingleChildScrollView ke paling luar dari body
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [
+                    Colors.red.shade200,
+                    Colors.purple.shade200
+                  ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(1.0, 0.0),
+                  stops: [0.0, 1.0],
+                  tileMode: TileMode.clamp
+              ),
             ),
-          ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Stack(
-              children:[ 
-                Flexible(
-                  flex: 2,
-                  child: Container(
+          child: Column(
+            // 2. Hapus 'mainAxisAlignment: MainAxisAlignment.spaceEvenly'
+            // Biarkan Column mengatur layout dari atas ke bawah
+            children: [
+              Stack(
+                children:[ 
+                  // 3. HAPUS 'Flexible(flex: 2, ...)' dari sini
+                  Container(
+                      // Beri sedikit padding bawah agar gambar tidak terpotong
+                      padding: EdgeInsets.only(bottom: 8.0), 
                       width: double.infinity,
                       child: Image.asset(
                         "assets/images/banner.jpg",
                         fit: BoxFit.fill,
                       )
                     ),
-                ),
-                Positioned(
-                  right: 16,
-                  top: 16,
-                  child: 
-                    FloatingActionButton(
-                      onPressed: () {
-                        setState(() {
-                          isPressed = !isPressed;
-                        });
-                      },
-                      backgroundColor: isPressed ? Colors.green[100] : Colors.blue[100],
-                      child: Icon(isPressed ? Icons.favorite : Icons.favorite_border_outlined),
-                    ),
-                )
-              ]
-            ),
-            Flexible(
-              flex: 1,
-              child: Container(
+                  Positioned(
+                    right: 16,
+                    top: 16,
+                    child: 
+                      FloatingActionButton(
+                        onPressed: () {
+                          setState(() {
+                            isPressed = !isPressed;
+                          });
+                        },
+                        backgroundColor: isPressed ? Colors.green[100] : Colors.blue[100],
+                        child: Icon(isPressed ? Icons.favorite : Icons.favorite_border_outlined),
+                      ),
+                  )
+                ]
+              ),
+              
+              // 4. HAPUS 'Flexible(flex: 1, ...)' dari sini
+              Container(
                 width: double.infinity,
-                height: double.infinity,
+                // Beri padding agar tidak terlalu mepet
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0), 
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // Flexible di dalam Row ini SUDAH BENAR
                     Flexible(
                       flex: 1,
                       child: ClipRRect(
@@ -141,27 +143,32 @@ class _HomePageState extends State<HomePage> {
                   ]
                 )
               ),
-            ),
-            Flexible(
-            flex: 3,
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                        "A Black Cat",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold
-                        ),
+              
+              // 5. HAPUS 'Flexible(flex: 3, ...)' dari sini
+              Container(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                            "A Black Cat",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
                       ),
-                    Expanded(
-                      child: ListView(
+                      
+                      // 6. HAPUS 'Expanded' dari sini
+                      ListView(
                         scrollDirection: Axis.vertical,
+                        // Penting: Tambahkan 2 properti ini
+                        shrinkWrap: true, // Agar ListView mengambil tinggi sesuai kontennya
+                        physics: NeverScrollableScrollPhysics(), // Biarkan SingleChildScrollView yg scroll
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 3.0),
@@ -183,13 +190,28 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                    )
-                  ],
-                ),
+                      
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/booking');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue, 
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                            textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
+                          ),
+                          child: Text("Book Now"),
+                        ),
+                      )
+                    ],
+                  ),
+                )
               )
-            )
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
